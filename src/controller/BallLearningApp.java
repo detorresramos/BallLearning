@@ -18,10 +18,19 @@ import view.IModelAdapter;
  */
 public class BallLearningApp {
 	
+	/**
+	 * The BallLearning backend
+	 */
 	private MainModel model;
 	
+	/**
+	 * The BallLearning frontend
+	 */
 	private MainView view;
 
+	/**
+	 * BallLearningApp
+	 */
 	public BallLearningApp() {
 		this.model = new MainModel(new IViewAdapter() {
 
@@ -33,7 +42,7 @@ public class BallLearningApp {
 		this.view = new MainView(new IModelAdapter() {
 
 			@Override
-			public void paint(Graphics g) {
+			public void update(Graphics g) {
 				model.update(g);
 			}
 
@@ -43,11 +52,17 @@ public class BallLearningApp {
 			}});
 	}
 	
+	/**
+	 * Start the app
+	 */
 	public void start() {
 		view.start();
-		model.start();
 	}
 
+	/**
+	 * Start the program
+	 * @param args arguments
+	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
             public void run() {

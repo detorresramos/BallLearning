@@ -12,7 +12,7 @@ import java.awt.Point;
  */
 public interface IModelAdapter {
 
-	public void paint(Graphics g);
+	public void update(Graphics g);
 
 	public void startSimulation(int numBalls, Point dimensions);
 	

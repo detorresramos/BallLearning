@@ -31,7 +31,7 @@ public class MainView extends JFrame {
 		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			model.paint(g);
+			model.update(g);
 		}
 	};
 	private final JPanel panel = new JPanel();
