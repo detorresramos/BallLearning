@@ -33,6 +33,10 @@ public class MainModel {
 	
 	private int targetRadius;
 	
+	private boolean started = false;
+	
+	private Random random = new Random();
+	
 	public MainModel(IViewAdapter view) {
 		this.view = view;
 	}
@@ -45,7 +49,8 @@ public class MainModel {
 		}
 		_timer.start();
 		this.targetRadius = 5;
-		this.targetPos = new Double(dimensions.getX() / 2.0, 0.0);
+		this.targetPos = new Double(dimensions.getX(), 0.0);
+		started = true;
 	}
 
 	public void update(Graphics g) {
@@ -55,42 +60,67 @@ public class MainModel {
 		for (int i = 0; i < numBalls; i++) {
 			balls[i].update(g);
 		}
-		paintTarget(g);
+		if (started) {
+			paintTarget(g);
+		}
 	}
 	
 	private void paintTarget(Graphics g) {
 		g.setColor(Color.RED);
-		g.fillOval((int) targetPos.x - targetRadius, (int) targetPos.y + targetRadius, targetRadius * 2, targetRadius * 2);
+		g.fillOval((int) targetPos.x - targetRadius, (int) targetPos.y - targetRadius, targetRadius * 2, targetRadius * 2);
 	}
 
 	private Ball[] getNewGeneration() {
 		Ball[] newBalls = new Ball[numBalls];
-		calculateFitness();
-		for (int i = 0; i < numBalls; i++) {
+		double fit = calculateFitness(balls);
+		newBalls[0] = getBestPrevBall();
+		for (int i = 1; i < numBalls; i++) {
 			 Ball parent = chooseParent();
 			 newBalls[i] = parent.makeChild();
 		}
 		return newBalls;
 	}
 
+//	private Ball[] refreshBalls() {
+//		Ball[] refresh = new Ball[numBalls];
+//		for (int i = 0; i < numBalls; i++) {
+//			 refresh[i] = new Ball(balls[i].getDimensions(), balls[i].getBrain());
+//		}
+//		return refresh;
+//	}
+
+	private Ball getBestPrevBall() {
+		double max = 0;
+		Ball ball = null;
+		for (int i = 0; i < numBalls; i++) {
+			double fit = balls[i].getFitness(targetPos);
+			 if (fit > max) {
+				 max = fit;
+				 ball = balls[i];
+			 }
+		}
+		return new Ball(ball.getDimensions(), ball.getBrain());
+	}
+
 	private Ball chooseParent() {
-		Random random = new Random();
 		double num = random.nextDouble() * fitnessSum;
 		double temp = 0;
 		for (int i = 0; i < numBalls; i++) {
+			temp += balls[i].getFitness(targetPos);
 			if (temp > num) {
 				return balls[i];
 			}
-			temp += balls[i].getFitness(targetPos);
 		}
+		System.out.println("SHOULDNT GET HERE");
 		return null;
 	}
 
-	private void calculateFitness() {
+	private double calculateFitness(Ball[] ballArray) {
 		fitnessSum = 0;
 		for (int i = 0; i < numBalls; i++) {
-			fitnessSum += balls[i].getFitness(balls[i].getLocation());
+			fitnessSum += ballArray[i].getFitness(targetPos);
 		}
+		return fitnessSum;
 	}
 
 	private boolean allDead() {
@@ -99,7 +129,7 @@ public class MainModel {
 				return false;
 			}
 		}
-		return true;
+		return balls != null;
 	}
 
 	public void repaint() {

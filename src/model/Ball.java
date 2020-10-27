@@ -22,9 +22,10 @@ public class Ball {
 	private boolean dead = false;
 	private Point dims;
 	private double mutationProb = 0.1;
-
+	private Random random = new Random();
+	
 	public Ball(Point dimensions) {
-		this.pos = new Double(radius, dimensions.y - radius);
+		this.pos = new Double(radius * 10, dimensions.y - (10 * radius));
 		this.vel = new Double(0,0);
 		this.dims = dimensions;
 		this.brain = new Brain(400);
@@ -66,9 +67,8 @@ public class Ball {
 		int brainSize = brain.getSize();
 		Double[] directions = brain.getDirections();
 		Double[] newDirections = new Double[brainSize];
-		Random random = new Random();
-		for (int i = 0; i < brainSize; i ++) {
-			if (random.nextInt(1) < mutationProb) {
+		for (int i = 0; i < brainSize; i++) {
+			if (random.nextDouble() < mutationProb) {
 				newDirections[i] = new Double(random.nextDouble() * 2 - 1, random.nextDouble() * 2 - 1);
 			} else {
 				newDirections[i] = directions[i];
@@ -78,10 +78,18 @@ public class Ball {
 	}
 
 	public double getFitness(Double target) {
-		return 1.0 / (1 + target.distance(pos));
+		return 1.0 / ((1 + target.distance(pos)) * (1 + target.distance(pos)));
 	}
 	
 	public Double getLocation() {
 		return pos;
+	}
+	
+	public Point getDimensions() {
+		return dims;
+	}
+	
+	public Brain getBrain() {
+		return brain;
 	}
 }
